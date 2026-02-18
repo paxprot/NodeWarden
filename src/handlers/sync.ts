@@ -60,7 +60,7 @@ export async function handleSync(request: Request, env: Env, userId: string): Pr
 
   const ciphers = await storage.getAllCiphers(userId);
   const folders = await storage.getAllFolders(userId);
-  const attachmentsByCipher = await storage.getAttachmentsByCipherIds(ciphers.map(c => c.id));
+  const attachmentsByCipher = await storage.getAttachmentsByUserId(userId);
 
   // Build profile response
   const profile: ProfileResponse = {

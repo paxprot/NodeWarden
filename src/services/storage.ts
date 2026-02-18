@@ -503,6 +503,38 @@ export class StorageService {
     return grouped;
   }
 
+  async getAttachmentsByUserId(userId: string): Promise<Map<string, Attachment[]>> {
+    const grouped = new Map<string, Attachment[]>();
+    const res = await this.db
+      .prepare(
+        `SELECT a.id, a.cipher_id, a.file_name, a.size, a.size_name, a.key
+         FROM attachments a
+         INNER JOIN ciphers c ON c.id = a.cipher_id
+         WHERE c.user_id = ?`
+      )
+      .bind(userId)
+      .all<any>();
+
+    for (const row of (res.results || [])) {
+      const item: Attachment = {
+        id: row.id,
+        cipherId: row.cipher_id,
+        fileName: row.file_name,
+        size: row.size,
+        sizeName: row.size_name,
+        key: row.key,
+      };
+      const list = grouped.get(item.cipherId);
+      if (list) {
+        list.push(item);
+      } else {
+        grouped.set(item.cipherId, [item]);
+      }
+    }
+
+    return grouped;
+  }
+
   async addAttachmentToCipher(cipherId: string, attachmentId: string): Promise<void> {
     // Kept for API compatibility; no-op because attachments table already links cipher_id.
     // We still validate that the attachment exists and belongs to cipher.

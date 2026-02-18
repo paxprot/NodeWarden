@@ -77,7 +77,7 @@ export async function handleGetCiphers(request: Request, env: Env, userId: strin
       : ciphers.filter(c => !c.deletedAt);
   }
 
-  const attachmentsByCipher = await storage.getAttachmentsByCipherIds(filteredCiphers.map(c => c.id));
+  const attachmentsByCipher = await storage.getAttachmentsByUserId(userId);
 
   // Get attachments for all ciphers
   const cipherResponses = [];
